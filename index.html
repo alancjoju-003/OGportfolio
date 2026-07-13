@@ -866,12 +866,36 @@
         }
 
         .project-item {
-          grid-template-columns: 40px 1fr;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.75rem;
+          padding: 1.5rem 0;
         }
 
-        .project-tech,
+        .project-num {
+          font-size: 11px;
+          margin-bottom: -0.25rem;
+        }
+
+        .project-tech {
+          display: flex;
+          gap: 0.4rem;
+          flex-wrap: wrap;
+          margin-top: 0.25rem;
+        }
+
+        .tech-badge {
+          font-size: 9px;
+          padding: 2px 8px;
+        }
+
         .project-link {
-          display: none;
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          font-size: 11px;
+          margin-top: 0.25rem;
         }
 
         .project-preview {
@@ -1335,7 +1359,80 @@
 
         .exp-grid {
           grid-template-columns: 1fr;
-          gap: 3rem;
+          gap: 2.5rem;
+        }
+
+        .exp-timeline {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0 0.5rem;
+          margin-bottom: 1.5rem;
+          height: auto;
+          position: relative;
+        }
+
+        /* Draw a horizontal line on mobile */
+        .exp-timeline::after {
+          content: '';
+          position: absolute;
+          left: 1rem;
+          right: 1rem;
+          top: 50%;
+          transform: translateY(-50%);
+          height: 2px;
+          background: var(--line);
+          z-index: 1;
+        }
+
+        /* Hide vertical connector lines on mobile */
+        .exp-item:not(:last-child)::after {
+          display: none;
+        }
+
+        .exp-item {
+          height: auto;
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          z-index: 2;
+          background: var(--paper);
+          padding: 0 6px;
+        }
+
+        .exp-item::before {
+          position: static;
+          transform: none;
+          margin-bottom: 0.5rem;
+        }
+
+        .exp-item.active::before {
+          transform: scale(1.3);
+          box-shadow: 0 0 0 4px rgba(0, 71, 255, 0.2);
+        }
+
+        .exp-item:hover::before {
+          transform: scale(1.5);
+        }
+
+        .exp-date {
+          font-size: 11px;
+        }
+
+        .exp-details-sticky {
+          position: relative;
+          top: 0;
+          min-height: auto;
+        }
+
+        .exp-detail-content {
+          position: absolute;
+        }
+
+        .exp-detail-content.active {
+          position: relative;
         }
       }
 
@@ -2540,15 +2637,32 @@
       rootMargin: '-40% 0px -40% 0px'
     });
 
-    expItems.forEach((el, index) => {
-      el.setAttribute('data-index', index);
-      expObserver.observe(el);
-      
-      // Click to scroll & show details
-      el.addEventListener('click', () => {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Only run scroll-observation and click-centering on desktop screens
+    if (window.innerWidth > 768) {
+      expItems.forEach((el, index) => {
+        el.setAttribute('data-index', index);
+        expObserver.observe(el);
+        
+        // Click to scroll & show details
+        el.addEventListener('click', () => {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
       });
-    });
+    } else {
+      // On mobile, use direct tab triggers to swap details active class without scroll observation fights
+      expItems.forEach((el, index) => {
+        el.setAttribute('data-index', index);
+        el.addEventListener('click', () => {
+          expItems.forEach(item => item.classList.remove('active'));
+          expDetails.forEach(detail => detail.classList.remove('active'));
+          
+          el.classList.add('active');
+          if (expDetails[index]) {
+            expDetails[index].classList.add('active');
+          }
+        });
+      });
+    }
 
     // ── STATS COUNTER ROLLUP (Intersection Observer) ──
     const counterObserver = new IntersectionObserver((entries, observer) => {

@@ -429,7 +429,7 @@
         letter-spacing: -0.05em;
       }
 
-      /* Hero Image Style */
+      /* Hero Image Style with 3D Grid Shatter Transition */
       .hero-image-wrap {
         position: absolute;
         right: 8%;
@@ -437,40 +437,7 @@
         width: 320px;
         height: 420px;
         z-index: 2;
-      }
-
-      .hero-image-inner {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        border-radius: 20px;
-        overflow: hidden;
-        border: 2px solid var(--charcoal);
-        box-shadow: 15px 15px 0px var(--accent-light), 30px 30px 0px rgba(0, 71, 255, 0.05);
-        transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-        background: var(--cream);
-      }
-
-      .hero-image-wrap img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.5s ease;
-      }
-
-      .hero-image-wrap:hover .hero-image-inner {
-        transform: translate(-5px, -5px);
-      }
-
-      .hero-image-wrap:hover img {
-        transform: scale(1.05);
-      }
-
-      .hero-image-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to bottom, transparent 60%, rgba(26, 24, 20, 0.2));
-        pointer-events: none;
+        perspective: 1200px; /* Enable 3D space */
       }
 
       @media (max-width: 1024px) {
@@ -509,6 +476,87 @@
           margin: 2rem auto 0 auto;
           align-self: center;
         }
+      }
+
+      /* Cube container acting as grid root */
+      .hero-image-inner-3d {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform-style: preserve-3d;
+        transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        border: 2px solid var(--charcoal);
+        border-radius: 20px;
+        box-shadow: 15px 15px 0px var(--accent-light), 30px 30px 0px rgba(0, 71, 255, 0.05);
+        background: var(--cream);
+        overflow: hidden;
+      }
+
+      /* Color Background revealed on hover */
+      .color-bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        opacity: 0;
+        transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+      }
+
+      .color-bg img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .hero-image-wrap:hover .color-bg,
+      .hero-image-wrap.flipped .color-bg {
+        opacity: 1;
+      }
+
+      /* Shatter Container and Tiles */
+      .shatter-container {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        transform-style: preserve-3d;
+      }
+
+      .tile {
+        position: absolute;
+        width: 33.334%;
+        height: 33.334%;
+        left: calc(var(--c) * 33.333%);
+        top: calc(var(--r) * 33.333%);
+        background-image: url('./assets/Gemini_Generated_Image_a23hb7a23hb7a23h-BtuJAxtC.png');
+        background-repeat: no-repeat;
+        /* Responsive background sizing mapped for a 3x3 layout */
+        background-size: 300% 300%;
+        background-position: calc(var(--c) * 50%) calc(var(--r) * 50%);
+        transform-style: preserve-3d;
+        transform: rotateX(0deg) rotateY(0deg) translateZ(0px);
+        opacity: 1;
+        transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease;
+        transition-delay: var(--delay);
+      }
+
+      /* Scatter animation triggered on hover or scroll flipped state */
+      .hero-image-wrap:hover .tile,
+      .hero-image-wrap.flipped .tile {
+        transform: rotateX(var(--rx)) rotateY(var(--ry)) translateZ(var(--tz)) scale(0.8);
+        opacity: 0;
+      }
+
+      .hero-image-overlay-3d {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, transparent 60%, rgba(26, 24, 20, 0.2));
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 2;
+        pointer-events: none;
       }
 
       /* â”€â”€ MARQUEE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -1870,15 +1918,71 @@
         transform: scale(1);
       }
     
+      /* ── SCROLL PROGRESS BAR ── */
+      #scroll-progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 0%;
+        height: 4px;
+        background: linear-gradient(to right, var(--accent), #0047ff);
+        z-index: 9999;
+        box-shadow: 0 0 10px rgba(0, 71, 255, 0.5);
+        transition: width 0.1s ease-out;
+      }
+
+      /* ── SCROLL VELOCITY SKEW EFFECT ── */
+      .project-item,
+      .skills-group,
+      .cert-carousel-stage,
+      .cert-info-card,
+      .exp-item {
+        transform: skewY(var(--scroll-skew, 0deg));
+        transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+      }
+
       /* ── NATIVE VANILLA TRANSITIONS (NO GSAP) ── */
       .reveal {
         opacity: 0 !important;
-        transform: translateY(30px) !important;
+        transform: translateY(30px) skewY(var(--scroll-skew, 0deg)) !important;
         transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1) !important;
       }
       .reveal.active {
         opacity: 1 !important;
-        transform: translateY(0) !important;
+        transform: translateY(0) skewY(var(--scroll-skew, 0deg)) !important;
+      }
+
+      /* Scale Reveal */
+      .reveal-scale {
+        opacity: 0 !important;
+        transform: scale(0.92) translateY(20px) skewY(var(--scroll-skew, 0deg)) !important;
+        transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1) !important;
+      }
+      .reveal-scale.active {
+        opacity: 1 !important;
+        transform: scale(1) translateY(0) skewY(var(--scroll-skew, 0deg)) !important;
+      }
+
+      /* Slide Left Reveal */
+      .reveal-left {
+        opacity: 0 !important;
+        transform: translateX(-45px) skewY(var(--scroll-skew, 0deg)) !important;
+        transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1) !important;
+      }
+      .reveal-left.active {
+        opacity: 1 !important;
+        transform: translateX(0) skewY(var(--scroll-skew, 0deg)) !important;
+      }
+
+      /* Slide Right Reveal */
+      .reveal-right {
+        opacity: 0 !important;
+        transform: translateX(45px) skewY(var(--scroll-skew, 0deg)) !important;
+        transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1) !important;
+      }
+      .reveal-right.active {
+        opacity: 1 !important;
+        transform: translateX(0) skewY(var(--scroll-skew, 0deg)) !important;
       }
 
       .title-line {
@@ -1925,6 +2029,8 @@
   </head>
 
   <body>
+    <!-- SCROLL PROGRESS BAR -->
+    <div id="scroll-progress"></div>
 
     <!-- LOADER -->
     <div id="loader">
@@ -1976,10 +2082,25 @@
       <div class="hero-number" aria-hidden="true">01</div>
 
       <!-- HERO IMAGE -->
-      <div class="hero-image-wrap reveal">
-        <div class="hero-image-inner">
-          <img src="./assets/Gemini_Generated_Image_a23hb7a23hb7a23h-BtuJAxtC.png" alt="Alan C Joju" />
-          <div class="hero-image-overlay"></div>
+      <div class="hero-image-wrap reveal" id="hero-image-3d-wrap">
+        <div class="hero-image-inner-3d">
+          <!-- Color Background (Revealed on Hover) -->
+          <div class="color-bg">
+            <img src="./assets/Gemini_Generated_Image_kdetjkkdetjkkdet-COI_QgTn.png" alt="Alan C Joju (Original Color)" />
+            <div class="hero-image-overlay-3d"></div>
+          </div>
+          <!-- Grayscale Shattering Grid (3x3 Tiles) -->
+          <div class="shatter-container">
+            <div class="tile" style="--r:0; --c:0; --delay:0.04s; --rx:45deg; --ry:-35deg; --tz:-150px;"></div>
+            <div class="tile" style="--r:0; --c:1; --delay:0.1s; --rx:-30deg; --ry:50deg; --tz:-180px;"></div>
+            <div class="tile" style="--r:0; --c:2; --delay:0.02s; --rx:60deg; --ry:20deg; --tz:-140px;"></div>
+            <div class="tile" style="--r:1; --c:0; --delay:0.08s; --rx:-45deg; --ry:-60deg; --tz:-160px;"></div>
+            <div class="tile" style="--r:1; --c:1; --delay:0.0s; --rx:25deg; --ry:-25deg; --tz:-120px;"></div>
+            <div class="tile" style="--r:1; --c:2; --delay:0.12s; --rx:-50deg; --ry:45deg; --tz:-190px;"></div>
+            <div class="tile" style="--r:2; --c:0; --delay:0.07s; --rx:40deg; --ry:30deg; --tz:-130px;"></div>
+            <div class="tile" style="--r:2; --c:1; --delay:0.03s; --rx:-20deg; --ry:-40deg; --tz:-140px;"></div>
+            <div class="tile" style="--r:2; --c:2; --delay:0.06s; --rx:55deg; --ry:-55deg; --tz:-170px;"></div>
+          </div>
         </div>
       </div>
 
@@ -2069,13 +2190,14 @@
         </div>
       </div>
 
-      <div class="about-right reveal">
+      <div class="about-right reveal-scale">
         <div class="skills-group">
           <div class="skills-group-title">Frontend</div>
           <div class="skills-tags">
             <div class="skill-tag"><span>HTML5 &amp; CSS3</span></div>
             <div class="skill-tag"><span>JavaScript</span></div>
-
+            <div class="skill-tag"><span>TypeScript</span></div>
+            <div class="skill-tag"><span>Angular</span></div>
           </div>
         </div>
         <div class="skills-group">
@@ -2113,7 +2235,7 @@
       </div>
 
       <div id="project-list">
-        <div class="project-item reveal"
+        <div class="project-item reveal-left"
           data-img="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80">
           <div class="project-num">01</div>
           <div>
@@ -2130,7 +2252,7 @@
             </svg></a>
         </div>
 
-        <div class="project-item reveal"
+        <div class="project-item reveal-right"
           data-img="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&q=80">
           <div class="project-num">02</div>
           <div>
@@ -2147,7 +2269,7 @@
             </svg></a>
         </div>
 
-        <div class="project-item reveal"
+        <div class="project-item reveal-left"
           data-img="https://images.unsplash.com/photo-1557821552-17105176677c?w=600&q=80">
           <div class="project-num">03</div>
           <div>
@@ -2164,7 +2286,7 @@
             </svg></a>
         </div>
 
-        <div class="project-item reveal"
+        <div class="project-item reveal-right"
           data-img="https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=600&q=80">
           <div class="project-num">04</div>
           <div>
@@ -2181,7 +2303,7 @@
             </svg></a>
         </div>
 
-        <div class="project-item reveal"
+        <div class="project-item reveal-left"
           data-img="https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600&q=80">
           <div class="project-num">05</div>
           <div>
@@ -2189,26 +2311,26 @@
             <div style="font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-top:4px;">An elegant responsive catalog interface showcasing designer eyewear.</div>
           </div>
           <div class="project-tech">
-            <span class="tech-badge">HTML5</span>
-            <span class="tech-badge">CSS3</span>
-            <span class="tech-badge">JavaScript</span>
+            <span class="tech-badge">ASP.NET</span>
+            <span class="tech-badge">MySQL</span>
           </div>
           <a href="https://github.com/alancjoju-003/sunglass" target="_blank" class="project-link">View <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M1 13L13 1M13 1H4M13 1V10" stroke="currentColor" stroke-width="1.5" />
             </svg></a>
         </div>
 
-        <div class="project-item reveal"
+        <div class="project-item reveal-right"
           data-img="https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=600&q=80">
           <div class="project-num">06</div>
           <div>
             <a href="https://alancjoju-003.github.io/Nestday1portfolio/" target="_blank" class="project-name">Nest Portfolio</a>
-            <div style="font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-top:4px;">A sleek, responsive developer portfolio template with clean layouts.</div>
+            <div style="font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-top:4px;">A sleek, responsive developer portfolio template built with Angular.</div>
           </div>
           <div class="project-tech">
+            <span class="tech-badge">Angular</span>
+            <span class="tech-badge">TypeScript</span>
             <span class="tech-badge">HTML5</span>
             <span class="tech-badge">CSS3</span>
-            <span class="tech-badge">JavaScript</span>
           </div>
           <a href="https://alancjoju-003.github.io/Nestday1portfolio/" target="_blank" class="project-link">View <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M1 13L13 1M13 1H4M13 1V10" stroke="currentColor" stroke-width="1.5" />
@@ -2234,7 +2356,7 @@
 
       <div class="cert-layout-grid">
         <!-- 3D CAROUSEL STAGE -->
-        <div class="cert-carousel-stage reveal">
+        <div class="cert-carousel-stage reveal-scale">
           <div class="cert-carousel-container">
             <div class="cert-carousel-track" id="certTrack">
               <!-- Cards will be populated dynamically by JavaScript -->
@@ -2257,7 +2379,7 @@
         </div>
 
         <!-- ACTIVE CERTIFICATE INFO CARD -->
-        <div class="cert-info-card reveal" id="certInfoCard">
+        <div class="cert-info-card reveal-scale" id="certInfoCard">
           <h3 class="cert-info-title" id="certInfoTitle">-</h3>
           <div class="cert-info-meta">
             <span class="cert-info-org" id="certInfoOrg">-</span>
@@ -2601,9 +2723,45 @@
       rootMargin: '0px 0px -50px 0px'
     });
 
-    document.querySelectorAll('section:not(#hero) .reveal, footer .reveal').forEach(el => {
+    document.querySelectorAll('section:not(#hero) :is(.reveal, .reveal-scale, .reveal-left, .reveal-right), footer :is(.reveal, .reveal-scale, .reveal-left, .reveal-right)').forEach(el => {
       revealObserver.observe(el);
     });
+
+    // ── SCROLL PROGRESS TRACKER ──
+    window.addEventListener('scroll', () => {
+      const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      const progress = document.getElementById('scroll-progress');
+      if (progress) {
+        progress.style.width = scrolled + '%';
+      }
+    }, { passive: true });
+
+    // ── SCROLL VELOCITY SKEW EFFECT (Dynamic 3D-Like wobble) ──
+    let lastScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    let skewTarget = 0;
+    let currentSkew = 0;
+
+    function scrollSkewLoop() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const diff = scrollTop - lastScrollTop;
+      lastScrollTop = scrollTop;
+
+      // Calculate velocity-based skew angle (capped at +/- 4 degrees to keep it elegant and subtle)
+      skewTarget = Math.max(-4, Math.min(4, diff * 0.05));
+      
+      // Interpolated lerp step for ultra-smooth easing
+      currentSkew += (skewTarget - currentSkew) * 0.1;
+      
+      document.documentElement.style.setProperty('--scroll-skew', `${currentSkew}deg`);
+      
+      // Gradually decay target back to zero
+      skewTarget *= 0.8;
+      
+      requestAnimationFrame(scrollSkewLoop);
+    }
+    requestAnimationFrame(scrollSkewLoop);
 
     // ── EXPERIENCE TIMELINE FOCUS OBSERVER ──
     const expItems = document.querySelectorAll('.exp-item');
@@ -3015,7 +3173,7 @@
         title: "Internship Certificate",
         issuer: "NeST Information Technologies",
         date: "2023",
-        desc: "Granted upon successful completion of the software engineering internship program at NeST IT. Gained practical experience in real-world application workflows and coding standards.",
+        desc: "Granted upon successful completion of the software engineering internship program at NeST IT, where I studied Angular development and gained practical experience in real-world application workflows and coding standards.",
         link: "NestInternship.pdf",
         img: "cert_nestinternship.png"
       }
@@ -3232,6 +3390,66 @@
 
     initCertificates();
 
+    // ── 3D HERO IMAGE MOUSE TILT & SHATTER EFFECT ──
+    const heroImageWrap = document.getElementById('hero-image-3d-wrap');
+    if (heroImageWrap) {
+      const heroImageInner = heroImageWrap.querySelector('.hero-image-inner-3d');
+      if (heroImageInner) {
+        let isHovered = false;
+
+        // Mouse Enter: prepare transition for tilt
+        heroImageWrap.addEventListener('mouseenter', () => {
+          isHovered = true;
+          heroImageInner.style.transition = 'transform 0.15s cubic-bezier(0.25, 1, 0.5, 1)';
+        });
+
+        // Mouse Move: calculate and apply 3D tilt coordinates
+        heroImageWrap.addEventListener('mousemove', (e) => {
+          const rect = heroImageWrap.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          const px = (x / rect.width) - 0.5;
+          const py = (y / rect.height) - 0.5;
+          
+          const maxTilt = 15; // Maximum tilt degrees
+          const tiltX = -py * maxTilt;
+          const tiltY = px * maxTilt;
+          
+          heroImageInner.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.03, 1.03, 1.03)`;
+        });
+
+        // Mouse Leave: smooth reset back to default orientation
+        heroImageWrap.addEventListener('mouseleave', () => {
+          isHovered = false;
+          heroImageInner.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+          heroImageInner.style.transform = 'rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+        });
+
+        // ── MOBILE SCROLL TRANSITION ──
+        function handleMobileScroll() {
+          if (window.innerWidth <= 768) {
+            // Trigger 3D shatter/color change if user scrolls down past 40px
+            if (window.scrollY > 40) {
+              heroImageWrap.classList.add('flipped');
+            } else {
+              heroImageWrap.classList.remove('flipped');
+            }
+          } else {
+            // Clean up flipped class on desktop when not hovering
+            if (!isHovered) {
+              heroImageWrap.classList.remove('flipped');
+            }
+          }
+        }
+
+        window.addEventListener('scroll', handleMobileScroll, { passive: true });
+        window.addEventListener('resize', handleMobileScroll);
+        // Initial run
+        handleMobileScroll();
+      }
+    }
+
     // ── MOBILE MENU TOGGLER ──
     const hamburger = document.getElementById('hamburger');
     const mobileMenu = document.getElementById('mobileMenu');
@@ -3248,21 +3466,57 @@
     }
   });
 
-  // ── CONTACT FORM ACTION ──
-  window.handleFormSubmit = function(event) {
+  // ── CONTACT FORM ACTION (Web3Forms Integration) ──
+  window.handleFormSubmit = async function(event) {
     event.preventDefault();
     const form = event.target;
     const feedback = document.getElementById('form-feedback');
+    
+    // 💡 TO MAKE THIS FORM WORK:
+    // 1. Go to https://web3forms.com/ and submit your email to get a free Access Key.
+    // 2. Paste your Access Key between the quotes below:
+    const accessKey = "606c3a26-5b2d-4eaa-b41f-99347313e72f"; 
+    
+    if (accessKey === "YOUR_ACCESS_KEY_HERE") {
+      if (feedback) {
+        feedback.classList.remove('hidden');
+        feedback.style.color = '#ff3b30'; // Red error color
+        feedback.innerText = 'Error: Please set your Web3Forms Access Key on line 3477 of index.html.';
+      }
+      return;
+    }
+
     if (feedback) {
       feedback.classList.remove('hidden');
       feedback.style.color = 'var(--accent)';
       feedback.innerText = 'Sending message...';
-      
-      setTimeout(() => {
-        feedback.style.color = '#22c55e';
-        feedback.innerText = 'Message sent successfully! Alan will get back to you soon.';
+    }
+
+    // Prepare form data
+    const formData = new FormData(form);
+    formData.append("access_key", accessKey);
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData
+      });
+      const data = await response.json();
+
+      if (response.status === 200) {
+        if (feedback) {
+          feedback.style.color = '#22c55e'; // Green success color
+          feedback.innerText = 'Message sent successfully! Alan will get back to you soon.';
+        }
         form.reset();
-      }, 1500);
+      } else {
+        throw new Error(data.message || 'Something went wrong.');
+      }
+    } catch (error) {
+      if (feedback) {
+        feedback.style.color = '#ff3b30'; // Red error color
+        feedback.innerText = `Error: ${error.message}`;
+      }
     }
   };
 </script>

@@ -1,0 +1,22 @@
+# Dependency directories
+node_modules/
+
+# Build outputs
+dist/
+
+# Local configuration
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE/System directories
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Agent system files
+.gemini/
+.agents/

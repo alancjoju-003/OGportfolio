@@ -39,6 +39,7 @@
 
       html {
         scroll-behavior: smooth;
+        scroll-padding-top: 80px;
       }
 
       body {
@@ -264,11 +265,10 @@
       /* â”€â”€ HERO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
       #hero {
         min-height: 100vh;
-        padding: 0 3rem;
+        padding: 80px 3rem 6rem 3rem;
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
-        padding-bottom: 6rem;
         position: relative;
         overflow: hidden;
       }
@@ -483,8 +483,7 @@
 
       @media (max-width: 768px) {
         #hero {
-          padding: 0 1.5rem;
-          padding-bottom: 4rem;
+          padding: 80px 1.5rem 4rem 1.5rem;
         }
 
         .hero-number {
